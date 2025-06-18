@@ -16,7 +16,7 @@ Sigue estos pasos para instalar y configurar el proyecto:
 
 1. Clona este repositorio:
    ```bash
-   git clone https://github.com/JhonnyCR20/ProyectoApi.git
+   git clone https://github.com/JhonnyCR20/ProyectoAPIs
    cd ProyectoApi
    ```
 
