@@ -132,8 +132,13 @@ class LibroDAO {
                     "INSERT INTO Grupo6_libros_autores (id_libro, id_autor) VALUES (:id_libro, :id_autor)"
                 );
                 foreach ($libro->getAutores() as $autor) {
+                    if (is_array($autor) && isset($autor['id_autor'])) {
+                        $idAutor = $autor['id_autor'];
+                    } else {
+                        $idAutor = $autor;
+                    }
                     $stmtAutores->bindParam(":id_libro", $idLibro);
-                    $stmtAutores->bindParam(":id_autor", $autor['id_autor']);
+                    $stmtAutores->bindParam(":id_autor", $idAutor);
                     $stmtAutores->execute();
                 }
             }
