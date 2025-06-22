@@ -1,19 +1,22 @@
 <?php
 require_once __DIR__ . '/../accessoDatos/LibroDAO.php';
 
-class LibroApiController {
+class LibroApiController
+{
     // Atributo privado para interactuar con la capa de acceso a datos
     private $libroDAO;
 
     // Constructor: Inicializa la instancia de LibroDAO
-    public function __construct() {
+    public function __construct()
+    {
         $this->libroDAO = new LibroDAO();
     }
 
     // Método para procesar las solicitudes HTTP
-    public function procesarPeticion($metodo, $id = null) {
+    public function procesarPeticion($metodo, $id = null)
+    {
         header('Content-Type: application/json'); // Configura el encabezado de respuesta
-        
+
         try {
             switch ($metodo) {
                 case 'GET':
@@ -29,7 +32,7 @@ class LibroApiController {
                     } else {
                         // Obtiene todos los libros
                         $libros = $this->libroDAO->getAll();
-                        echo json_encode(['status' => 'success', 'data' => array_map(function($libro) {
+                        echo json_encode(['status' => 'success', 'data' => array_map(function ($libro) {
                             return $libro->toArray();
                         }, $libros)]);
                     }
@@ -45,10 +48,10 @@ class LibroApiController {
                     $libro->setIdEditorial($datos['id_editorial']);
                     $libro->setIsbn($datos['isbn']);
                     $libro->setCantidadDisponible($datos['cantidad_disponible']);
-                    if (isset($datos['autores'])) {
+                    if (isset($datos['autores']) && is_array($datos['autores'])) {
                         $libro->setAutores($datos['autores']);
                     }
-                    
+
                     $id = $this->libroDAO->create($libro);
                     http_response_code(201);
                     echo json_encode(['status' => 'success', 'message' => 'Libro creado', 'id' => $id]);
@@ -70,10 +73,10 @@ class LibroApiController {
                     $libro->setIdEditorial($datos['id_editorial']);
                     $libro->setIsbn($datos['isbn']);
                     $libro->setCantidadDisponible($datos['cantidad_disponible']);
-                    if (isset($datos['autores'])) {
+                    if (isset($datos['autores']) && is_array($datos['autores'])) {
                         $libro->setAutores($datos['autores']);
                     }
-                    
+
                     $this->libroDAO->update($libro);
                     echo json_encode(['status' => 'success', 'message' => 'Libro actualizado']);
                     break;
@@ -100,4 +103,3 @@ class LibroApiController {
         }
     }
 }
-?>
