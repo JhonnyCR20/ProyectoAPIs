@@ -51,8 +51,9 @@ class LibroApiController
                     $libro->setIdEditorial($datos['id_editorial']);
                     $libro->setIsbn($datos['isbn']);
                     $libro->setCantidadDisponible($datos['cantidad_disponible']);
-                    if (isset($datos['autores']) && is_array($datos['autores'])) {
-                        $libro->setAutores($datos['autores']);
+                    if (isset($datos['autores'])) {
+                        $autores = is_array($datos['autores']) ? $datos['autores'] : [$datos['autores']];
+                        $libro->setAutores($autores);
                     }
 
                     $id = $this->libroDAO->create($libro);
@@ -68,7 +69,7 @@ class LibroApiController
                     }
                     // Actualiza un libro existente
                     $datos = json_decode(file_get_contents('php://input'), true);
-                     file_put_contents(__DIR__ . '/debug_libro_put.log', print_r($datos, true), FILE_APPEND);
+                    file_put_contents(__DIR__ . '/debug_libro_put.log', print_r($datos, true), FILE_APPEND);
                     $libro = new Libro();
                     $libro->setId($id);
                     $libro->setTitulo($datos['titulo']);
@@ -77,8 +78,9 @@ class LibroApiController
                     $libro->setIdEditorial($datos['id_editorial']);
                     $libro->setIsbn($datos['isbn']);
                     $libro->setCantidadDisponible($datos['cantidad_disponible']);
-                    if (isset($datos['autores']) && is_array($datos['autores'])) {
-                        $libro->setAutores($datos['autores']);
+                    if (isset($datos['autores'])) {
+                        $autores = is_array($datos['autores']) ? $datos['autores'] : [$datos['autores']];
+                        $libro->setAutores($autores);
                     }
 
                     $this->libroDAO->update($libro);
