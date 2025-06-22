@@ -1,35 +1,40 @@
 <?php
 require_once __DIR__ . '/../accessoDatos/AutorDAO.php';
 
-class AutorController {
+class AutorController
+{
     // Atributo privado para interactuar con la capa de acceso a datos
     private $autorDAO;
 
     // Constructor: Inicializa la instancia de AutorDAO
-    public function __construct() {
+    public function __construct()
+    {
         $this->autorDAO = new AutorDAO();
     }
 
     // Método para obtener todos los autores
-    public function obtenerTodos() {
-    $autores = $this->autorDAO->getAll();
-    // Convertir cada objeto Autor a array asociativo
-    return array_map(function($autor) {
-        return [
-            'id_autor' => $autor->id_autor,
-            'nombre' => $autor->nombre,
-            'nacionalidad' => $autor->nacionalidad
-        ];
-    }, $autores);
-}
+    public function obtenerTodos()
+    {
+        $autores = $this->autorDAO->getAll();
+        // Convertir cada objeto Autor a array asociativo
+        return array_map(function ($autor) {
+            return [
+                'id_autor' => $autor->id_autor,
+                'nombre' => $autor->nombre,
+                'nacionalidad' => $autor->nacionalidad
+            ];
+        }, $autores);
+    }
 
     // Método para obtener un autor por su ID
-    public function obtenerPorId($id) {
+    public function obtenerPorId($id)
+    {
         return $this->autorDAO->getById($id);
     }
 
     // Método para crear un nuevo autor
-    public function crear($data) {
+    public function crear($data)
+    {
         // Validaciones básicas de los datos recibidos
         if (empty($data['nombre']) || empty($data['nacionalidad'])) {
             return ['error' => 'Todos los campos son requeridos'];
@@ -41,7 +46,8 @@ class AutorController {
     }
 
     // Método para actualizar un autor existente
-    public function actualizar($data) {
+    public function actualizar($data)
+    {
         // Validaciones básicas de los datos recibidos
         if (empty($data['id_autor']) || empty($data['nombre']) || empty($data['nacionalidad'])) {
             return ['error' => 'Todos los campos son requeridos'];
@@ -53,8 +59,8 @@ class AutorController {
     }
 
     // Método para eliminar un autor por su ID
-    public function eliminar($id) {
+    public function eliminar($id)
+    {
         return $this->autorDAO->delete($id);
     }
 }
-?>
