@@ -1,0 +1,62 @@
+Array
+(
+    [id_libro] => 12
+    [titulo] => hora de aventura
+    [anio_publicacion] => 2025
+    [id_categoria] => 1
+    [id_editorial] => 2
+    [isbn] => 222-2-11-22222-22
+    [cantidad_disponible] => 11
+    [categoria_nombre] => Ficción
+    [editorial_nombre] => Bloomsbury Publishing
+    [autores] => Array
+        (
+            [0] => 1
+        )
+
+)
+Array
+(
+    [id_libro] => 12
+    [titulo] => hora de aventura
+    [anio_publicacion] => 2025
+    [id_categoria] => 1
+    [id_editorial] => 2
+    [isbn] => 222-2-11-22222-22
+    [cantidad_disponible] => 11
+    [categoria_nombre] => Ficción
+    [editorial_nombre] => Bloomsbury Publishing
+    [autores] => Array
+        (
+            [0] => 1
+        )
+
+)
+Array
+(
+    [titulo] => Cien Años de Soledad
+    [anio_publicacion] => 1963
+    [id_categoria] => 2
+    [id_editorial] => 1
+    [isbn] => 978-84-376-0494-7
+    [cantidad_disponible] => 5
+    [autores] => Array
+        (
+            [0] => 1
+        )
+
+)
+Array
+(
+    [titulo] => hora de aventura
+    [anio_publicacion] => 2024
+    [id_categoria] => 1
+    [id_editorial] => 2
+    [isbn] => 222-2-22-22222-22
+    [cantidad_disponible] => 10
+    [autores] => Array
+        (
+            [0] => 1
+        )
+
+)
