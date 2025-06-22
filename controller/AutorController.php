@@ -12,8 +12,16 @@ class AutorController {
 
     // Método para obtener todos los autores
     public function obtenerTodos() {
-        return $this->autorDAO->getAll();
-    }
+    $autores = $this->autorDAO->getAll();
+    // Convertir cada objeto Autor a array asociativo
+    return array_map(function($autor) {
+        return [
+            'id_autor' => $autor->id_autor,
+            'nombre' => $autor->nombre,
+            'nacionalidad' => $autor->nacionalidad
+        ];
+    }, $autores);
+}
 
     // Método para obtener un autor por su ID
     public function obtenerPorId($id) {
