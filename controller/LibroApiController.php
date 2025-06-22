@@ -68,6 +68,7 @@ class LibroApiController
                     }
                     // Actualiza un libro existente
                     $datos = json_decode(file_get_contents('php://input'), true);
+                     file_put_contents(__DIR__ . '/debug_libro_put.log', print_r($datos, true), FILE_APPEND);
                     $libro = new Libro();
                     $libro->setId($id);
                     $libro->setTitulo($datos['titulo']);
