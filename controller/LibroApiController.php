@@ -3,6 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 require_once __DIR__ . '/../accessoDatos/LibroDAO.php';
+require_once __DIR__ . '/HistorialController.php';
 
 class LibroApiController
 {
@@ -57,6 +58,15 @@ class LibroApiController
                     }
 
                     $id = $this->libroDAO->create($libro);
+                    
+                    // Registrar en historial si fue exitoso
+                    if ($id) {
+                        HistorialController::registrarAccion(
+                            null, // No hay lector específico para libros
+                            "Libro creado - Título: " . $datos['titulo'] . " - ISBN: " . $datos['isbn'] . " - Stock: " . $datos['cantidad_disponible']
+                        );
+                    }
+                    
                     http_response_code(201);
                     echo json_encode(['status' => 'success', 'message' => 'Libro creado', 'id' => $id]);
                     break;
@@ -83,7 +93,16 @@ class LibroApiController
                         $libro->setAutores($autores);
                     }
 
-                    $this->libroDAO->update($libro);
+                    $resultado = $this->libroDAO->update($libro);
+                    
+                    // Registrar en historial si fue exitoso
+                    if ($resultado) {
+                        HistorialController::registrarAccion(
+                            null, // No hay lector específico para libros
+                            "Libro actualizado - ID: " . $id . " - Título: " . $datos['titulo']
+                        );
+                    }
+                    
                     echo json_encode(['status' => 'success', 'message' => 'Libro actualizado']);
                     break;
 
@@ -93,8 +112,21 @@ class LibroApiController
                         echo json_encode(['status' => 'error', 'message' => 'Se requiere ID']);
                         break;
                     }
+                    
+                    // Obtener información del libro antes de eliminarlo
+                    $libro = $this->libroDAO->getById($id);
+                    
                     // Elimina un libro por su ID
-                    $this->libroDAO->delete($id);
+                    $resultado = $this->libroDAO->delete($id);
+                    
+                    // Registrar en historial si fue exitoso
+                    if ($resultado && $libro) {
+                        HistorialController::registrarAccion(
+                            null, // No hay lector específico para libros
+                            "Libro eliminado - ID: " . $id . " - Título: " . $libro->getTitulo()
+                        );
+                    }
+                    
                     echo json_encode(['status' => 'success', 'message' => 'Libro eliminado']);
                     break;
 

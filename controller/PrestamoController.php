@@ -3,6 +3,7 @@
 // Proporciona métodos para realizar operaciones CRUD relacionadas con los préstamos.
 
 require_once __DIR__ . '/../accessoDatos/PrestamoDAO.php';
+require_once __DIR__ . '/HistorialController.php';
 
 class PrestamoController {
     private $prestamoDAO;
@@ -33,7 +34,18 @@ class PrestamoController {
 
         // Convertir el arreglo en un objeto Prestamo
         $prestamo = new Prestamo(null, $data['id_lector'], $data['fecha_prestamo'], $data['fecha_devolucion'], $data['estado']);
-        return $this->prestamoDAO->insert($prestamo);
+        $resultado = $this->prestamoDAO->insert($prestamo);
+        
+        // Registrar en historial si fue exitoso
+        if ($resultado) {
+            HistorialController::registrarAccion(
+                $data['id_lector'], 
+                "Préstamo creado - Estado: " . $data['estado'] . " - Fecha: " . $data['fecha_prestamo']
+            );
+            return ['success' => 'Préstamo creado exitosamente'];
+        } else {
+            return ['error' => 'No se pudo crear el préstamo'];
+        }
     }
 
     // Método para actualizar un préstamo existente
@@ -45,13 +57,38 @@ class PrestamoController {
 
         // Convertir el arreglo en un objeto Prestamo
         $prestamo = new Prestamo($data['id_prestamo'], $data['id_lector'], $data['fecha_prestamo'], $data['fecha_devolucion'], $data['estado']);
-        return $this->prestamoDAO->update($prestamo);
+        $resultado = $this->prestamoDAO->update($prestamo);
+        
+        // Registrar en historial si fue exitoso
+        if ($resultado) {
+            HistorialController::registrarAccion(
+                $data['id_lector'], 
+                "Préstamo actualizado - ID: " . $data['id_prestamo'] . " - Estado: " . $data['estado']
+            );
+            return ['success' => 'Préstamo actualizado exitosamente'];
+        } else {
+            return ['error' => 'No se pudo actualizar el préstamo'];
+        }
     }
 
     // Método para eliminar un préstamo por su ID
     public function eliminar($id) {
-        // Llama al método delete() de PrestamoDAO para eliminar el préstamo
-        return $this->prestamoDAO->delete($id);
+        // Obtener información del préstamo antes de eliminarlo
+        $prestamo = $this->prestamoDAO->getById($id);
+        
+        // Eliminar el préstamo
+        $resultado = $this->prestamoDAO->delete($id);
+        
+        // Registrar en historial si fue exitoso y tenemos info del préstamo
+        if ($resultado && $prestamo) {
+            HistorialController::registrarAccion(
+                $prestamo['id_lector'], 
+                "Préstamo eliminado - ID: " . $id
+            );
+            return ['success' => 'Préstamo eliminado exitosamente'];
+        } else {
+            return ['error' => 'No se pudo eliminar el préstamo'];
+        }
     }
 }
 ?>

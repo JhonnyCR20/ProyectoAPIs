@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prueba API Usuarios - Compatibilidad de IDs</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .result { margin: 10px 0; padding: 10px; background: #f0f0f0; white-space: pre-wrap; }
+        .success { background: #d4edda; border-left: 4px solid #155724; }
+        .error { background: #f8d7da; border-left: 4px solid #721c24; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        input { padding: 8px; margin: 5px; width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Prueba API Usuarios - Compatibilidad de IDs</h1>
+    
+    <div class="test-section">
+        <h3>📋 Obtener Todos los Usuarios</h3>
+        <button onclick="obtenerTodos()">GET /usuarios.php</button>
+        <div id="result-todos" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔍 Obtener Usuario por ID - URL Path Style</h3>
+        <input type="number" id="id-path" placeholder="ID del usuario" value="1">
+        <button onclick="obtenerPorIdPath()">GET /usuarios.php/{ID}</button>
+        <div id="result-id-path" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔍 Obtener Usuario por ID - Query String Style</h3>
+        <input type="number" id="id-query" placeholder="ID del usuario" value="1">
+        <button onclick="obtenerPorIdQuery()">GET /usuarios.php?id={ID}</button>
+        <div id="result-id-query" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>➕ Crear Usuario</h3>
+        <div>
+            <input type="text" id="nombre" placeholder="Nombre" value="Usuario Test">
+            <input type="email" id="correo" placeholder="Correo" value="test@email.com">
+            <input type="password" id="clave" placeholder="Contraseña" value="password123">
+            <select id="rol">
+                <option value="bibliotecario">Bibliotecario</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
+        <button onclick="crearUsuario()">POST /usuarios.php</button>
+        <div id="result-crear" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔐 Login de Usuario</h3>
+        <div>
+            <input type="email" id="login-correo" placeholder="Correo" value="test@email.com">
+            <input type="password" id="login-clave" placeholder="Contraseña" value="password123">
+        </div>
+        <button onclick="loginUsuario()">POST /usuarios.php/login</button>
+        <div id="result-login" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>✏️ Actualizar Usuario (Query String)</h3>
+        <div>
+            <input type="number" id="update-id" placeholder="ID" value="1">
+            <input type="text" id="update-nombre" placeholder="Nuevo nombre" value="Nombre Actualizado">
+            <input type="email" id="update-correo" placeholder="Nuevo correo" value="updated@email.com">
+        </div>
+        <button onclick="actualizarUsuario()">PUT /usuarios.php?id={ID}</button>
+        <div id="result-actualizar" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>📊 Ver Historial de Usuarios</h3>
+        <button onclick="verHistorial()">Ver Últimos Registros</button>
+        <div id="result-historial" class="result"></div>
+    </div>
+
+    <script>
+        const baseURL = '/ProyectoApi/ProyectoAPIs/view/API';
+
+        function mostrarResultado(elementId, data, esExito = true) {
+            const elemento = document.getElementById(elementId);
+            elemento.className = `result ${esExito ? 'success' : 'error'}`;
+            elemento.textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function obtenerTodos() {
+            try {
+                const response = await fetch(`${baseURL}/usuarios.php`);
+                const result = await response.json();
+                mostrarResultado('result-todos', result, response.ok);
+            } catch (error) {
+                mostrarResultado('result-todos', { error: error.message }, false);
+            }
+        }
+
+        async function obtenerPorIdPath() {
+            const id = document.getElementById('id-path').value;
+            try {
+                const response = await fetch(`${baseURL}/usuarios.php/${id}`);
+                const result = await response.json();
+                mostrarResultado('result-id-path', result, response.ok);
+            } catch (error) {
+                mostrarResultado('result-id-path', { error: error.message }, false);
+            }
+        }
+
+        async function obtenerPorIdQuery() {
+            const id = document.getElementById('id-query').value;
+            try {
+                const response = await fetch(`${baseURL}/usuarios.php?id=${id}`);
+                const result = await response.json();
+                mostrarResultado('result-id-query', result, response.ok);
+            } catch (error) {
+                mostrarResultado('result-id-query', { error: error.message }, false);
+            }
+        }
+
+        async function crearUsuario() {
+            const datos = {
+                nombre: document.getElementById('nombre').value,
+                correo: document.getElementById('correo').value,
+                clave: document.getElementById('clave').value,
+                rol: document.getElementById('rol').value
+            };
+
+            try {
+                const response = await fetch(`${baseURL}/usuarios.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+                const result = await response.json();
+                mostrarResultado('result-crear', result, response.ok);
+            } catch (error) {
+                mostrarResultado('result-crear', { error: error.message }, false);
+            }
+        }
+
+        async function loginUsuario() {
+            const datos = {
+                correo: document.getElementById('login-correo').value,
+                clave: document.getElementById('login-clave').value
+            };
+
+            try {
+                const response = await fetch(`${baseURL}/usuarios.php/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+                const result = await response.json();
+                mostrarResultado('result-login', result, response.ok);
+            } catch (error) {
+                mostrarResultado('result-login', { error: error.message }, false);
+            }
+        }
+
+        async function actualizarUsuario() {
+            const id = document.getElementById('update-id').value;
+            const datos = {
+                nombre: document.getElementById('update-nombre').value,
+                correo: document.getElementById('update-correo').value
+            };
+
+            try {
+                const response = await fetch(`${baseURL}/usuarios.php?id=${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+                const result = await response.json();
+                mostrarResultado('result-actualizar', result, response.ok);
+            } catch (error) {
+                mostrarResultado('result-actualizar', { error: error.message }, false);
+            }
+        }
+
+        async function verHistorial() {
+            try {
+                const response = await fetch(`${baseURL}/historial.php`);
+                const result = await response.json();
+                // Filtrar solo registros de usuarios y mostrar los últimos 5
+                const historialUsuarios = result.data ? 
+                    result.data.filter(item => item.accion.includes('Usuario')).slice(-5) : [];
+                mostrarResultado('result-historial', historialUsuarios, response.ok);
+            } catch (error) {
+                mostrarResultado('result-historial', { error: error.message }, false);
+            }
+        }
+    </script>
+</body>
+</html>

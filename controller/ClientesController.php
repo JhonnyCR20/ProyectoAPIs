@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__.'/../accessoDatos/ClientesDAO.php';
-
+require_once __DIR__ . '/HistorialController.php';
 
 class ClientesController{
     // Atributo privado para interactuar con la capa de acceso a datos
@@ -24,7 +24,17 @@ class ClientesController{
 
     // Método para insertar un nuevo cliente
     public function insertar(Clientes $objeto){
-        return $this->dao->insertar($objeto);
+        $resultado = $this->dao->insertar($objeto);
+        
+        // Registrar en historial si fue exitoso
+        if ($resultado) {
+            HistorialController::registrarAccion(
+                null, // No hay lector específico para clientes
+                "Cliente creado - Nombre: " . $objeto->nombre . " " . $objeto->apellidos . " - Teléfono: " . $objeto->telefono
+            );
+        }
+        
+        return $resultado;
     }
 }
 

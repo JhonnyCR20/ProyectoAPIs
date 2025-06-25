@@ -60,3 +60,31 @@ Array
         )
 
 )
+Array
+(
+    [titulo] => Cien Años de Soledad
+    [anio_publicacion] => 1962
+    [id_categoria] => 2
+    [id_editorial] => 1
+    [isbn] => 978-84-376-0494-7
+    [cantidad_disponible] => 12
+    [autores] => Array
+        (
+            [0] => 1
+        )
+
+)
+Array
+(
+    [titulo] => Cien Años de Soledad
+    [anio_publicacion] => 1961
+    [id_categoria] => 2
+    [id_editorial] => 1
+    [isbn] => 978-84-376-0494-7
+    [cantidad_disponible] => 14
+    [autores] => Array
+        (
+            [0] => 1
+        )
+
+)

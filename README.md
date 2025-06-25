@@ -1,6 +1,14 @@
-# Proyecto API
+# Proyecto API - Biblioteca
 
-Este proyecto es una API desarrollada en PHP que permite gestionar una biblioteca, incluyendo usuarios, lectores, libros, préstamos y más.
+Este proyecto es una API RESTful desarrollada en PHP que permite gestionar una biblioteca, incluyindo control automático de stock de libros, usuarios, lectores, libros, préstamos, reservas, multas y más.
+
+## ✨ Características Principales
+
+- **Control automático de stock**: El sistema maneja automáticamente el inventario de libros al crear/eliminar préstamos
+- **Endpoints flexibles**: Acepta parámetros tanto en la URL (`/recurso.php/1`) como en query string (`?id=1`)
+- **Validaciones robustas**: Incluye validación de stock, integridad referencial y datos requeridos
+- **Manejo de errores**: Respuestas JSON claras y descriptivas para todos los errores
+- **Rollback automático**: Si falla una operación, se revierten los cambios en el stock
 
 ## Requisitos Previos
 
@@ -103,8 +111,21 @@ Content-Type: application/json
 
 ## Notas Adicionales
 
-- Asegúrate de que los permisos de los archivos y carpetas sean correctos para evitar problemas de acceso.
-- Puedes usar herramientas como Postman para probar los endpoints de la API.
+### Control de Stock Automático
+Al trabajar con préstamos de libros, el sistema automáticamente:
+- **Reduce el stock** cuando se crea un detalle de préstamo
+- **Ajusta el stock** cuando se modifica la cantidad prestada
+- **Devuelve el stock** cuando se elimina un detalle de préstamo
+- **Valida disponibilidad** antes de permitir préstamos
+
+Para más detalles, consulta el archivo `CONTROL_STOCK.md`.
+
+### Validaciones Implementadas
+- Stock suficiente antes de préstamos
+- Integridad referencial en todas las relaciones
+- Emails únicos para lectores
+- Cantidades positivas en préstamos
+- Rollback automático en caso de errores
 
 ## Licencia
 

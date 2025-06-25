@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../accessoDatos/LectorDAO.php';
+require_once __DIR__ . '/HistorialController.php';
 
 class LectorApiController {
     // Atributo privado para interactuar con la capa de acceso a datos
@@ -60,6 +61,15 @@ class LectorApiController {
                     $lector->setDireccion($datos['direccion']);
                     
                     $id = $this->lectorDAO->create($lector);
+                    
+                    // Registrar en historial
+                    if ($id) {
+                        HistorialController::registrarAccion(
+                            $id, 
+                            "Perfil de lector creado - Nombre: " . $datos['nombre']
+                        );
+                    }
+                    
                     http_response_code(201);
                     echo json_encode(['status' => 'success', 'message' => 'Lector creado', 'id' => $id]);
                     break;
@@ -79,7 +89,16 @@ class LectorApiController {
                     $lector->setTelefono(isset($datos['telefono']) ? $datos['telefono'] : '');
                     $lector->setDireccion(isset($datos['direccion']) ? $datos['direccion'] : '');
                     
-                    $this->lectorDAO->update($lector);
+                    $resultado = $this->lectorDAO->update($lector);
+                    
+                    // Registrar en historial
+                    if ($resultado) {
+                        HistorialController::registrarAccion(
+                            $id, 
+                            "Perfil de lector actualizado - Nombre: " . $datos['nombre']
+                        );
+                    }
+                    
                     echo json_encode(['status' => 'success', 'message' => 'Lector actualizado']);
                     break;
 
@@ -90,7 +109,16 @@ class LectorApiController {
                         break;
                     }
                     // Elimina un lector por su ID
-                    $this->lectorDAO->delete($id);
+                    $resultado = $this->lectorDAO->delete($id);
+                    
+                    // Registrar en historial
+                    if ($resultado) {
+                        HistorialController::registrarAccion(
+                            $id, 
+                            "Perfil de lector eliminado - ID: " . $id
+                        );
+                    }
+                    
                     echo json_encode(['status' => 'success', 'message' => 'Lector eliminado']);
                     break;
 

@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../controller/DetallePrestamoController.php';
 $detallePrestamoController = new DetallePrestamoController();
 
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *'); // Allow all origins
+header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
@@ -20,11 +20,22 @@ header('Access-Control-Allow-Origin: *'); // Allow all origins
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
+
+// Extraer ID de la URL o del query string
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$pathParts = explode('/', $path);
+$id = null;
+if (is_numeric(end($pathParts))) {
+    $id = end($pathParts);
+} elseif (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id = $_GET['id'];
+}
+
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
         // Obtiene todos los detalles de préstamos o uno específico según el parámetro 'id'
-        if (isset($_GET['id'])) {
-            echo json_encode($detallePrestamoController->obtenerPorId($_GET['id']));
+        if ($id) {
+            echo json_encode($detallePrestamoController->obtenerPorId($id));
         } else {
             echo json_encode($detallePrestamoController->obtenerTodos());
         }
@@ -38,17 +49,17 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
     case 'PUT':
         // Actualiza un detalle de préstamo existente según el parámetro 'id'
-        if (isset($_GET['id'])) {
+        if ($id) {
             $data = json_decode(file_get_contents('php://input'), true);
-            $data['id_detalle'] = $_GET['id'];
+            $data['id_detalle'] = $id;
             echo json_encode($detallePrestamoController->actualizar($data));
         }
         break;
 
     case 'DELETE':
         // Elimina un detalle de préstamo según el parámetro 'id'
-        if (isset($_GET['id'])) {
-            echo json_encode($detallePrestamoController->eliminar($_GET['id']));
+        if ($id) {
+            echo json_encode($detallePrestamoController->eliminar($id));
         }
         break;
 

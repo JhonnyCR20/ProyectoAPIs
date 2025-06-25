@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Detalle Préstamos API</title>
+</head>
+<body>
+    <h1>Test API Detalle Préstamos</h1>
+    <button onclick="testAPI()">Probar API</button>
+    <div id="resultado"></div>
+
+    <script>
+        async function testAPI() {
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.innerHTML = 'Probando...';
+            
+            try {
+                const response = await fetch('/ProyectoAPIs/view/API/detallePrestamos.php');
+                const text = await response.text();
+                
+                resultadoDiv.innerHTML = `
+                    <h3>Respuesta del servidor:</h3>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <p><strong>Content-Type:</strong> ${response.headers.get('content-type')}</p>
+                    <p><strong>Texto recibido:</strong></p>
+                    <pre>${text}</pre>
+                `;
+                
+                // Intentar parsear como JSON
+                try {
+                    const json = JSON.parse(text);
+                    resultadoDiv.innerHTML += '<p><strong>✅ JSON VÁLIDO</strong></p>';
+                } catch (e) {
+                    resultadoDiv.innerHTML += `<p><strong>❌ JSON INVÁLIDO:</strong> ${e.message}</p>`;
+                }
+                
+            } catch (error) {
+                resultadoDiv.innerHTML = `<p><strong>Error:</strong> ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

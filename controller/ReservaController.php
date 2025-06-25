@@ -3,6 +3,7 @@
 // Proporciona métodos para realizar operaciones CRUD relacionadas con las reservas.
 
 require_once __DIR__ . '/../accessoDatos/ReservaDAO.php';
+require_once __DIR__ . '/HistorialController.php';
 
 class ReservaController {
     private $reservaDAO;
@@ -33,7 +34,24 @@ class ReservaController {
 
         // Convertir el arreglo en un objeto Reserva
         $reserva = new Reserva(null, $data['id_lector'], $data['id_libro'], $data['fecha_reserva'], $data['estado']);
-        return $this->reservaDAO->insert($reserva);
+        $resultado = $this->reservaDAO->insert($reserva);
+        
+        // Registrar en historial si fue exitoso
+        if ($resultado) {
+            // Obtener título del libro para el historial
+            require_once __DIR__ . '/../accessoDatos/LibroDAO.php';
+            $libroDAO = new LibroDAO();
+            $libro = $libroDAO->getById($data['id_libro']);
+            $tituloLibro = $libro ? $libro->getTitulo() : "ID: " . $data['id_libro'];
+            
+            HistorialController::registrarAccion(
+                $data['id_lector'], 
+                "Reserva creada - Libro: " . $tituloLibro . " - Estado: " . $data['estado']
+            );
+            return ['success' => 'Reserva creada exitosamente'];
+        } else {
+            return ['error' => 'No se pudo crear la reserva'];
+        }
     }
 
     // Método para actualizar una reserva existente
@@ -45,13 +63,38 @@ class ReservaController {
 
         // Convertir el arreglo en un objeto Reserva
         $reserva = new Reserva($data['id_reserva'], $data['id_lector'], $data['id_libro'], $data['fecha_reserva'], $data['estado']);
-        return $this->reservaDAO->update($reserva);
+        $resultado = $this->reservaDAO->update($reserva);
+        
+        // Registrar en historial si fue exitoso
+        if ($resultado) {
+            HistorialController::registrarAccion(
+                $data['id_lector'], 
+                "Reserva actualizada - ID: " . $data['id_reserva'] . " - Estado: " . $data['estado']
+            );
+            return ['success' => 'Reserva actualizada exitosamente'];
+        } else {
+            return ['error' => 'No se pudo actualizar la reserva'];
+        }
     }
 
     // Método para eliminar una reserva por su ID
     public function eliminar($id) {
-        // Llama al método delete() de ReservaDAO para eliminar la reserva
-        return $this->reservaDAO->delete($id);
+        // Obtener información de la reserva antes de eliminarla
+        $reserva = $this->reservaDAO->getById($id);
+        
+        // Eliminar la reserva
+        $resultado = $this->reservaDAO->delete($id);
+        
+        // Registrar en historial si fue exitoso y tenemos info de la reserva
+        if ($resultado && $reserva) {
+            HistorialController::registrarAccion(
+                $reserva['id_lector'], 
+                "Reserva eliminada - ID: " . $id
+            );
+            return ['success' => 'Reserva eliminada exitosamente'];
+        } else {
+            return ['error' => 'No se pudo eliminar la reserva'];
+        }
     }
 }
 ?>

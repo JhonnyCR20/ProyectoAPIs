@@ -27,8 +27,13 @@ class HistorialDAO {
         $stmt = $this->pdo->prepare("SELECT * FROM Grupo6_historial WHERE id_historial = ?");
         $stmt->execute([$id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        // Crea un objeto Historial a partir de los datos obtenidos
-        return new Historial($row['id_historial'], $row['id_lector'], $row['accion'], $row['fecha']);
+        
+        if ($row) {
+            // Crea un objeto Historial a partir de los datos obtenidos
+            return new Historial($row['id_historial'], $row['id_lector'], $row['accion'], $row['fecha']);
+        }
+        
+        return null;
     }
 
     // Método para insertar un nuevo registro de historial

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../accessoDatos/UsuarioDAO.php';
+require_once __DIR__ . '/HistorialController.php';
 
 class UsuarioController {
     // Atributo privado para interactuar con la capa de acceso a datos
@@ -38,7 +39,18 @@ class UsuarioController {
         }
 
         // Llama al DAO para crear el usuario
-        return $this->usuarioDAO->crear($datos);
+        $resultado = $this->usuarioDAO->crear($datos);
+        
+        // Registrar en historial si fue exitoso
+        if ($resultado && !isset($resultado['error'])) {
+            HistorialController::registrarAccion(
+                null, // No hay lector específico para usuarios
+                "Usuario creado - Nombre: " . $datos['nombre'] . " - Rol: " . $datos['rol'] . " - Correo: " . $datos['correo']
+            );
+            return ['success' => 'Usuario creado exitosamente'];
+        } else {
+            return $resultado; // Retorna el error del DAO si existe
+        }
     }
 
     // Método para actualizar un usuario existente
@@ -58,7 +70,18 @@ class UsuarioController {
         ];
 
         // Llama al DAO para actualizar el usuario
-        return $this->usuarioDAO->actualizar($id, $usuario);
+        $resultado = $this->usuarioDAO->actualizar($id, $usuario);
+        
+        // Registrar en historial si fue exitoso
+        if ($resultado && !isset($resultado['error'])) {
+            HistorialController::registrarAccion(
+                null, // No hay lector específico para usuarios
+                "Usuario actualizado - ID: " . $id . " - Nombre: " . $data['nombre']
+            );
+            return ['success' => 'Usuario actualizado exitosamente'];
+        } else {
+            return $resultado; // Retorna el error del DAO si existe
+        }
     }
 
     // Método para eliminar un usuario por su ID
@@ -77,6 +100,11 @@ class UsuarioController {
         // Llama al DAO para eliminar el usuario
         $resultado = $this->usuarioDAO->eliminar($id);
         if ($resultado) {
+            // Registrar en historial si fue exitoso
+            HistorialController::registrarAccion(
+                null, // No hay lector específico para usuarios
+                "Usuario eliminado - ID: " . $id . " - Nombre: " . $usuario['nombre']
+            );
             return ['status' => 'success', 'message' => 'Usuario eliminado correctamente'];
         }
 

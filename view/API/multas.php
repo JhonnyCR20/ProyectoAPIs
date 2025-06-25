@@ -20,12 +20,21 @@ header('Access-Control-Allow-Origin: *'); // Allow all origins
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
+// Extraer ID de la URL o del query string
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$pathParts = explode('/', $path);
+$id = null;
+if (is_numeric(end($pathParts))) {
+    $id = end($pathParts);
+} elseif (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id = $_GET['id'];
+}
 
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
         // Obtiene todas las multas o una específica según el parámetro 'id'
-        if (isset($_GET['id'])) {
-            echo json_encode($multaController->obtenerPorId($_GET['id']));
+        if ($id) {
+            echo json_encode($multaController->obtenerPorId($id));
         } else {
             echo json_encode($multaController->obtenerTodos());
         }
@@ -39,17 +48,17 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
     case 'PUT':
         // Actualiza una multa existente según el parámetro 'id'
-        if (isset($_GET['id'])) {
+        if ($id) {
             $data = json_decode(file_get_contents('php://input'), true);
-            $data['id_multa'] = $_GET['id'];
+            $data['id_multa'] = $id;
             echo json_encode($multaController->actualizar($data));
         }
         break;
 
     case 'DELETE':
         // Elimina una multa según el parámetro 'id'
-        if (isset($_GET['id'])) {
-            echo json_encode($multaController->eliminar($_GET['id']));
+        if ($id) {
+            echo json_encode($multaController->eliminar($id));
         }
         break;
 

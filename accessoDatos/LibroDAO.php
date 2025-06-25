@@ -236,5 +236,52 @@ class LibroDAO {
             throw new Exception("Error al eliminar libro: " . $e->getMessage());
         }
     }
+
+    // Método para reducir el stock de un libro (al prestarlo)
+    public function reducirStock($idLibro, $cantidad = 1) {
+        try {
+            // Primero verificar si hay stock suficiente
+            $stmt = $this->pdo->prepare("SELECT cantidad_disponible FROM Grupo6_libros WHERE id_libro = :id");
+            $stmt->bindParam(":id", $idLibro);
+            $stmt->execute();
+            
+            $libro = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$libro) {
+                throw new Exception("Libro no encontrado");
+            }
+            
+            if ($libro['cantidad_disponible'] < $cantidad) {
+                throw new Exception("Stock insuficiente. Disponible: " . $libro['cantidad_disponible']);
+            }
+            
+            // Reducir el stock
+            $stmt = $this->pdo->prepare(
+                "UPDATE Grupo6_libros SET cantidad_disponible = cantidad_disponible - :cantidad WHERE id_libro = :id"
+            );
+            $stmt->bindParam(":cantidad", $cantidad);
+            $stmt->bindParam(":id", $idLibro);
+            $result = $stmt->execute();
+            
+            return $result;
+        } catch (PDOException $e) {
+            throw new Exception("Error al reducir stock: " . $e->getMessage());
+        }
+    }
+
+    // Método para aumentar el stock de un libro (al devolverlo)
+    public function aumentarStock($idLibro, $cantidad = 1) {
+        try {
+            $stmt = $this->pdo->prepare(
+                "UPDATE Grupo6_libros SET cantidad_disponible = cantidad_disponible + :cantidad WHERE id_libro = :id"
+            );
+            $stmt->bindParam(":cantidad", $cantidad);
+            $stmt->bindParam(":id", $idLibro);
+            $result = $stmt->execute();
+            
+            return $result;
+        } catch (PDOException $e) {
+            throw new Exception("Error al aumentar stock: " . $e->getMessage());
+        }
+    }
 }
 ?>

@@ -27,8 +27,11 @@ class PrestamoDAO {
         $stmt = $this->pdo->prepare("SELECT * FROM grupo6_prestamos WHERE id_prestamo = ?");
         $stmt->execute([$id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        // Crea un objeto Prestamo a partir de los datos obtenidos
-        return new Prestamo($row['id_prestamo'], $row['id_lector'], $row['fecha_prestamo'], $row['fecha_devolucion'], $row['estado']);
+        // Crea un objeto Prestamo a partir de los datos obtenidos si existe
+        if ($row) {
+            return new Prestamo($row['id_prestamo'], $row['id_lector'], $row['fecha_prestamo'], $row['fecha_devolucion'], $row['estado']);
+        }
+        return null;
     }
 
     // Método para insertar un nuevo préstamo
