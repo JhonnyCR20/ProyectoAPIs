@@ -72,18 +72,31 @@ class CategoriaController {
         // Obtener información de la categoría antes de eliminarla
         $categoria = $this->categoriaDAO->getById($id);
         
+        if (!$categoria) {
+            return ['status' => 'error', 'message' => 'Categoría no encontrada'];
+        }
+        
         // Eliminar la categoría
         $resultado = $this->categoriaDAO->delete($id);
         
-        // Registrar en historial si fue exitoso y tenemos info de la categoría
-        if ($resultado && $categoria) {
+        // Verificar si es un error de integridad referencial
+        if (is_array($resultado) && isset($resultado['error']) && $resultado['error'] === 'foreign_key') {
+            return [
+                'status' => 'error', 
+                'message' => $resultado['message'],
+                'error_type' => 'foreign_key_constraint'
+            ];
+        }
+        
+        // Registrar en historial si fue exitoso
+        if ($resultado === true) {
             HistorialController::registrarAccion(
                 null, // No hay lector específico para categorías
                 "Categoría eliminada - ID: " . $id . " - Nombre: " . $categoria['nombre']
             );
-            return ['success' => 'Categoría eliminada exitosamente'];
+            return ['status' => 'success', 'message' => 'Categoría eliminada exitosamente'];
         } else {
-            return ['error' => 'No se pudo eliminar la categoría'];
+            return ['status' => 'error', 'message' => 'No se pudo eliminar la categoría'];
         }
     }
 }

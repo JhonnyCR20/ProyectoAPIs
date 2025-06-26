@@ -45,8 +45,16 @@ class CategoriaDAO {
 
     // Método para eliminar una categoría por su ID
     public function delete($id) {
-        $stmt = $this->pdo->prepare("DELETE FROM grupo6_categorias WHERE id_categoria = ?");
-        return $stmt->execute([$id]);
+        try {
+            $stmt = $this->pdo->prepare("DELETE FROM grupo6_categorias WHERE id_categoria = ?");
+            return $stmt->execute([$id]);
+        } catch (PDOException $e) {
+            // Error 1451: Cannot delete or update a parent row: a foreign key constraint fails
+            if ($e->getCode() == '23000' || strpos($e->getMessage(), '1451') !== false) {
+                return ['error' => 'foreign_key', 'message' => 'No se puede eliminar la categoría porque está siendo utilizada por uno o más libros'];
+            }
+            return false;
+        }
     }
 }
 ?>
