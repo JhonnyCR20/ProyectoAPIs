@@ -34,7 +34,7 @@ class UsuarioController {
         }
 
         // Validación del rol permitido
-        if (!in_array($datos['rol'], ['admin', 'bibliotecario'])) {
+        if (!in_array($datos['rol'], ['admin', 'bibliotecario', 'lector'])) {
             return ['error' => 'Rol no válido'];
         }
 
@@ -42,14 +42,14 @@ class UsuarioController {
         $resultado = $this->usuarioDAO->crear($datos);
         
         // Registrar en historial si fue exitoso
-        if ($resultado && !isset($resultado['error'])) {
+        if ($resultado && is_numeric($resultado)) {
             HistorialController::registrarAccion(
                 null, // No hay lector específico para usuarios
                 "Usuario creado - Nombre: " . $datos['nombre'] . " - Rol: " . $datos['rol'] . " - Correo: " . $datos['correo']
             );
-            return ['success' => 'Usuario creado exitosamente'];
+            return $resultado; // Retorna el ID del usuario creado
         } else {
-            return $resultado; // Retorna el error del DAO si existe
+            return ['error' => 'No se pudo crear el usuario'];
         }
     }
 
@@ -58,6 +58,11 @@ class UsuarioController {
         // Validaciones básicas de los datos recibidos
         if (empty($id) || empty($data['nombre']) || empty($data['correo'])) {
             return ['error' => 'Todos los campos son requeridos'];
+        }
+
+        // Validación del rol si se proporciona
+        if (isset($data['rol']) && !in_array($data['rol'], ['admin', 'bibliotecario', 'lector'])) {
+            return ['error' => 'Rol no válido'];
         }
 
         // Convertir el arreglo en un objeto Usuario
@@ -73,14 +78,14 @@ class UsuarioController {
         $resultado = $this->usuarioDAO->actualizar($id, $usuario);
         
         // Registrar en historial si fue exitoso
-        if ($resultado && !isset($resultado['error'])) {
+        if ($resultado) {
             HistorialController::registrarAccion(
                 null, // No hay lector específico para usuarios
                 "Usuario actualizado - ID: " . $id . " - Nombre: " . $data['nombre']
             );
             return ['success' => 'Usuario actualizado exitosamente'];
         } else {
-            return $resultado; // Retorna el error del DAO si existe
+            return ['error' => 'No se pudo actualizar el usuario'];
         }
     }
 

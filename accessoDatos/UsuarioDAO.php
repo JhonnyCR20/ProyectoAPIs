@@ -19,7 +19,6 @@ class UsuarioDAO {
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC); // Devuelve los usuarios como un array asociativo
         } catch (Exception $e) {
-            echo "Error al obtener usuarios: " . $e->getMessage();
             return false;
         }
     }
@@ -32,7 +31,6 @@ class UsuarioDAO {
             $stmt->execute([$id]);
             return $stmt->fetch(PDO::FETCH_ASSOC); // Devuelve el usuario como un array asociativo
         } catch (Exception $e) {
-            echo "Error al obtener usuario: " . $e->getMessage();
             return false;
         }
     }
@@ -51,7 +49,6 @@ class UsuarioDAO {
             ]);
             return $this->conn->lastInsertId(); // Devuelve el ID del usuario creado
         } catch (Exception $e) {
-            echo "Error al crear usuario: " . $e->getMessage();
             return false;
         }
     }
@@ -85,7 +82,6 @@ class UsuarioDAO {
             $stmt = $this->conn->prepare($sql);
             return $stmt->execute($valores);
         } catch (Exception $e) {
-            echo "Error al actualizar usuario: " . $e->getMessage();
             return false;
         }
     }
@@ -96,16 +92,8 @@ class UsuarioDAO {
             $sql = "DELETE FROM grupo6_usuarios WHERE id_usuario = ?";
             $stmt = $this->conn->prepare($sql);
             $resultado = $stmt->execute([$id]);
-
-            if ($resultado) {
-                echo "Usuario con ID $id eliminado correctamente.";
-            } else {
-                echo "No se pudo eliminar el usuario con ID $id.";
-            }
-
             return $resultado;
         } catch (Exception $e) {
-            echo "Error al eliminar usuario: " . $e->getMessage();
             return false;
         }
     }
@@ -124,7 +112,6 @@ class UsuarioDAO {
             }
             return false;
         } catch (Exception $e) {
-            echo "Error en la autenticación: " . $e->getMessage();
             return false;
         }
     }
